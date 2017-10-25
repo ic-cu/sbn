@@ -1,0 +1,38 @@
+db.driver = oracle.jdbc.OracleDriver
+db.url = jdbc:oracle:thin:@X.Y.Z.W:NNNN:NOMEDB
+db.user = XXX
+db.pass = YYY
+
+log.file = tmp/file.log
+log.pattern = %d{yyyy-MM-dd HH:mm:ss} %p %C{1}.%M - %m%n
+log.level = info
+
+query.luoghi = \
+	SELECT \
+		COUNT( "TR_TIT_LUO"."LID" ) "legami", \
+		"TB_LUOGO"."LID" "LID", \
+		"TB_LUOGO"."DS_LUOGO" \
+	FROM \
+		"MULTIMATERIALE"."TR_TIT_LUO" "TR_TIT_LUO", \
+		"MULTIMATERIALE"."TB_LUOGO" "TB_LUOGO" \
+	WHERE \
+		"TR_TIT_LUO"."LID" = "TB_LUOGO"."LID" \
+		AND "TR_TIT_LUO"."FL_CANC" != 'S' \
+		AND "TB_LUOGO"."CD_PAESE" = 'IT' \
+		AND ( "TB_LUOGO"."CD_LIVELLO" = '97' OR "TB_LUOGO"."CD_LIVELLO" = '96' OR "TB_LUOGO"."CD_LIVELLO" = '95' ) \
+	GROUP BY "TB_LUOGO"."LID", "TB_LUOGO"."DS_LUOGO" \
+	HAVING ( ( COUNT( "TR_TIT_LUO"."LID" ) <= 500 ) ) \
+	ORDER BY "legami" DESC
+	
+query.isbd = \
+	SELECT \
+		"TB_TITOLO"."BID", \
+		"TB_TITOLO"."ISBD", \
+		"TB_TITOLO"."INDICE_ISBD" \
+	FROM \
+		"MULTIMATERIALE"."TR_TIT_LUO" "TR_TIT_LUO", \
+		"MULTIMATERIALE"."TB_TITOLO" "TB_TITOLO" \
+	WHERE \
+		"TR_TIT_LUO"."BID" = "TB_TITOLO"."BID" \
+		AND "TR_TIT_LUO"."FL_CANC" != 'S' \
+		AND "TR_TIT_LUO"."LID" = ?
