@@ -1,3 +1,5 @@
+package sbn;
+
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -15,13 +17,15 @@ public class LuoghiTitoliArea4
 	private DB db;
 	private String qLuoghi;
 	private PreparedStatement isbdStmt;
+	private Properties conf;
+	private PrintWriter out;
 
 // Prime impostazioni: accesso db, query e simili
 
 	public LuoghiTitoliArea4()
 	{
 		Log.init("luoghi.prop");
-		Properties conf = new Properties();
+		conf = new Properties();
 		try
 		{
 			conf.load(new FileReader("luoghi.prop"));
@@ -33,6 +37,7 @@ public class LuoghiTitoliArea4
 			qLuoghi = conf.getProperty("query.luoghi");
 			Log.info("Query luoghi: " + qLuoghi);
 			isbdStmt = db.prepare(conf.getProperty("query.isbd"));
+			out = new PrintWriter(conf.getProperty("output.file"));
 		}
 		catch(FileNotFoundException e)
 		{
@@ -50,14 +55,13 @@ public class LuoghiTitoliArea4
 		try
 		{
 			ResultSet luoghi = lt.db.select(lt.qLuoghi);
-			PrintWriter out = new PrintWriter("luoghi-area4.txt");
 			while(luoghi.next())
 			{
 				String lid = luoghi.getString("LID");
 				String luogo = luoghi.getString("DS_LUOGO");
 				String legami = luoghi.getString("legami");
 				Log.info("LID: " + lid + ", Luogo: " + luogo + " (" + legami + " legami)");
-				out.println(lid + ", Luogo: " + luogo + " (" + legami + " legami)");
+				lt.out.println(lid + ", Luogo: " + luogo + " (" + legami + " legami)");
 				lt.isbdStmt.setString(1, lid);
 				ResultSet isbdRS = lt.isbdStmt.executeQuery();
 				while(isbdRS.next())
@@ -89,19 +93,15 @@ public class LuoghiTitoliArea4
 					}
 					Log.debug("Indice 210: " + i210 + ", " + f210 + ", indice: " + indice);
 					Log.info("Area 4: [" + area4 + "] isbd: " + isbd + ", indice: " + indice);
-					out.println(bid + ", area4: " + area4);
+					lt.out.println(bid + ", area4: " + area4);
 				}
-				out.println();
-				out.println();
-				out.flush();
+				lt.out.println();
+				lt.out.println();
+				lt.out.flush();
 			}
-			out.close();
+			lt.out.close();
 		}
 		catch(SQLException e)
-		{
-			e.printStackTrace();
-		}
-		catch(FileNotFoundException e)
 		{
 			e.printStackTrace();
 		}
