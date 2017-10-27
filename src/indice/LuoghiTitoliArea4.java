@@ -1,4 +1,4 @@
-package sbn;
+package indice;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
