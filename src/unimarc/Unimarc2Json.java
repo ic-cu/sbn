@@ -145,15 +145,13 @@ public class Unimarc2Json
 			Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 			JsonParser jp = new JsonParser();
 			JsonElement je = null;
-			JsonObject gRecord = new JsonObject();
-// gRecord.addProperty("chiave", "valore");
-// System.out.println(gson.toJson(gRecord));
 			output.write("[\n");
 			while(reader.hasNext())
 			{
 				Record record = reader.next();
 				String bid = null;
 				JSONObject jRecord = new JSONObject();
+				JsonObject gRecord = new JsonObject();
 
 				char status = record.getLeader().toString().charAt(5);
 				log.debug("stato: " + status);
@@ -164,12 +162,15 @@ public class Unimarc2Json
 				{
 					case 'm':
 						jRecord.put("livello", "monografia");
+						gRecord.addProperty("livello", "monografia");
 						break;
 					case 'a':
 						jRecord.put("livello", "spoglio");
+						gRecord.addProperty("livello", "spoglio");
 						break;
 					case 's':
 						jRecord.put("livello", "periodico");
+						gRecord.addProperty("livello", "periodico");
 						break;
 					default:
 						break;
@@ -180,42 +181,55 @@ public class Unimarc2Json
 				{
 					case 'a':
 						jRecord.put("tipo", "Testo a stampa");
+						gRecord.addProperty("tipo", "Testo a stampa");
 						break;
 					case 'b':
 						jRecord.put("tipo", "Testo manoscritto");
+						gRecord.addProperty("tipo", "Testo manoscritto");
 						break;
 					case 'c':
 						jRecord.put("tipo", "Musica a stampa");
+						gRecord.addProperty("tipo", "Musica a stampa");
 						break;
 					case 'd':
 						jRecord.put("tipo", "Musica manoscritta");
+						gRecord.addProperty("tipo", "Musica manoscritta");
 						break;
 					case 'e':
 						jRecord.put("tipo", "Cartografia a stampa");
+						gRecord.addProperty("tipo", "Cartografia a stampa");
 						break;
 					case 'f':
 						jRecord.put("tipo", "Cartografia manoscritta");
+						gRecord.addProperty("tipo", "Cartografia manoscritta");
 						break;
 					case 'g':
 						jRecord.put("tipo", "Materiale video");
+						gRecord.addProperty("tipo", "Materiale video");
 						break;
 					case 'k':
 						jRecord.put("tipo", "Materiale grafico");
+						gRecord.addProperty("tipo", "Materiale grafico");
 						break;
 					case 'i':
 						jRecord.put("tipo", "Registrazione sonora non musicale");
+						gRecord.addProperty("tipo", "Registrazione sonora non musicale");
 						break;
 					case 'j':
 						jRecord.put("tipo", "Registrazione sonora musicale");
+						gRecord.addProperty("tipo", "Registrazione sonora musicale");
 						break;
 					case 'l':
 						jRecord.put("tipo", "Risorsa elettronica");
+						gRecord.addProperty("tipo", "Risorsa elettronica");
 						break;
 					case 'm':
 						jRecord.put("tipo", "Materiale multimediale");
+						gRecord.addProperty("tipo", "Materiale multimediale");
 						break;
 					case 'r':
 						jRecord.put("tipo", "Oggetto multimediale");
+						gRecord.addProperty("tipo", "Oggetto multimediale");
 						break;
 					default:
 						break;
