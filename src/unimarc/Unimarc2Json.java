@@ -106,7 +106,7 @@ public class Unimarc2Json
 		String noext = null;
 		SimpleLayout sl = new SimpleLayout();
 		ConsoleAppender ca = new ConsoleAppender(sl, "System.out");
-		console.setLevel(Level.INFO);
+		console.setLevel(Level.DEBUG);
 		console.addAppender(ca);
 		WriterAppender wa = null;
 		StopWatch sw = new StopWatch();
@@ -497,10 +497,14 @@ public class Unimarc2Json
 							jNomi.add(data);
 							break;
 						case "899":
-							data = field.getSubfield('1').getData();
-							JSONObject jLoc = new JSONObject();
-							jLoc.put("isil", data);
-							jLocs.add(jLoc);
+							Subfield s1 = field.getSubfield('1');
+							if(s1 != null)
+							{
+								data = s1.getData();
+								JSONObject jLoc = new JSONObject();
+								jLoc.put("isil", data);
+								jLocs.add(jLoc);
+							}
 							break;
 						default:
 							break;
