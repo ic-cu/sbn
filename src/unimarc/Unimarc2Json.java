@@ -209,6 +209,11 @@ public class Unimarc2Json
 							log.info("BID: " + bid);
 							gRecord.addProperty("codiceIdentificativo", bid);
 							break;
+						case "003":
+							String permalink = field.getData();
+							log.info("Permalink: " + permalink);
+							gRecord.addProperty("permalink", permalink);
+							break;
 						default:
 							break;
 					}
@@ -389,7 +394,6 @@ public class Unimarc2Json
 								}
 							}
 							gSoggetti.add(new JsonPrimitive(data));
-							// jRecord.put("soggetti", data);
 							break;
 						case "676":
 							if(field.getSubfield('a') != null)
@@ -458,9 +462,10 @@ public class Unimarc2Json
 							if(s1 != null)
 							{
 								data = s1.getData();
-								JsonObject gLoc = new JsonObject();								
-								gLoc.addProperty("isil", data);
-								gLocs.add(gLoc);
+//								JsonObject gLoc = new JsonObject();								
+//								gLoc.addProperty("isil", "IT-" + data);
+//								gLocs.add(gLoc);
+								gLocs.add(new JsonPrimitive("IT-" + data));
 							}
 							break;
 						default:
@@ -474,6 +479,7 @@ public class Unimarc2Json
 					gRecord.add("dewey", gCDDs);
 					gRecord.add("soggetti", gSoggetti);
 					gRecord.add("altriTitoli", gVarianti);
+					gRecord.add("localizzazioni", gLocs);
 					String prettyGsonString = gson.toJson(gRecord);
 					output.write(prettyGsonString);
 					if(reader.hasNext())
