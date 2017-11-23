@@ -8,6 +8,7 @@ log.pattern = %d{yyyy-MM-dd HH:mm:ss} %p %C{1}.%M - %m%n
 log.level = info
 
 output.file = tmp/luoghi-area4.txt
+param.datada = 2017-10-25
 
 query.luoghi = \
 	SELECT \
@@ -30,11 +31,13 @@ query.isbd = \
 	SELECT \
 		"TB_TITOLO"."BID", \
 		"TB_TITOLO"."ISBD", \
-		"TB_TITOLO"."INDICE_ISBD" \
+		"TB_TITOLO"."INDICE_ISBD", \
+		"TR_TIT_LUO"."TS_VAR" "TS_VAR" \
 	FROM \
 		"MULTIMATERIALE"."TR_TIT_LUO" "TR_TIT_LUO", \
 		"MULTIMATERIALE"."TB_TITOLO" "TB_TITOLO" \
 	WHERE \
 		"TR_TIT_LUO"."BID" = "TB_TITOLO"."BID" \
+		AND "TR_TIT_LUO"."TS_VAR" > ? \
 		AND "TR_TIT_LUO"."FL_CANC" != 'S' \
 		AND "TR_TIT_LUO"."LID" = ?
