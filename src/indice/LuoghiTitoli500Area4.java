@@ -7,29 +7,29 @@ import java.io.PrintWriter;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLSyntaxErrorException;
 import java.util.Properties;
+
 import util.log.Log;
 import util.sql.DB;
 
-public class LuoghiTitoliArea4
+public class LuoghiTitoli500Area4
 {
 	private DB db;
 	private String qLuoghi;
 	private String dataDa;
-	private PreparedStatement isbdStmt;
+	private PreparedStatement isbdStmt, luoghiStmt;
 	private Properties conf;
 	private PrintWriter out;
 
 // Prime impostazioni: accesso db, query e simili
 
-	public LuoghiTitoliArea4()
+	public LuoghiTitoli500Area4()
 	{
 		Log.init("luoghi.prop");
 		conf = new Properties();
 		try
 		{
-			conf.load(new FileReader("luoghi.prop"));
+			conf.load(new FileReader("luoghi500.prop"));
 			String driver = conf.getProperty("db.driver");
 			String url = conf.getProperty("db.url");
 			String user = conf.getProperty("db.user");
@@ -38,7 +38,7 @@ public class LuoghiTitoliArea4
 			db = new DB(driver, url, user, pass);
 			qLuoghi = conf.getProperty("query.luoghi");
 			Log.info("Query luoghi: " + qLuoghi);
-			db.prepare(conf.getProperty("query.luoghi"));
+			luoghiStmt = db.prepare(conf.getProperty("query.luoghi"));
 			isbdStmt = db.prepare(conf.getProperty("query.isbd"));
 			out = new PrintWriter(conf.getProperty("output.file"));
 		}
@@ -54,23 +54,23 @@ public class LuoghiTitoliArea4
 
 	public static void main(String[] args)
 	{
-		LuoghiTitoliArea4 lt = new LuoghiTitoliArea4();
+		LuoghiTitoli500Area4 lt = new LuoghiTitoli500Area4();
 		try
 		{
-			ResultSet luoghi = lt.db.select(lt.qLuoghi);
+// lt.luoghiStmt.setDate(1, java.sql.Date.valueOf(lt.dataDa));
+			ResultSet luoghi = lt.luoghiStmt.executeQuery();
 			while(luoghi.next())
 			{
 				String lid = luoghi.getString("LID");
 				String luogo = luoghi.getString("DS_LUOGO");
+				String legami = luoghi.getString("legami");
 				lt.isbdStmt.setDate(1, java.sql.Date.valueOf(lt.dataDa));
 				lt.isbdStmt.setString(2, lid);
-
-				ResultSet isbdRS;
-				isbdRS = lt.isbdStmt.executeQuery();
+				ResultSet isbdRS = lt.isbdStmt.executeQuery();
 				if(isbdRS.isBeforeFirst())
 				{
-					Log.info("LID: " + lid + ", Luogo: " + luogo);
-					lt.out.println(lid + ", Luogo: " + luogo);
+					Log.info("LID: " + lid + ", Luogo: " + luogo + " (" + legami + " legami)");
+					lt.out.println(lid + ", Luogo: " + luogo + " (" + legami + " legami)");
 				}
 				boolean found = false;
 				while(isbdRS.next())
@@ -103,16 +103,9 @@ public class LuoghiTitoliArea4
 								area4 = isbd.substring(i210 - 1);
 							}
 						}
-						if(area4.startsWith(luogo + " : ") || area4.startsWith("In " + luogo + " : ") || area4.startsWith("(" + luogo + " : ") || area4.startsWith("(In " + luogo + " : "))
-						{
-							Log.debug("Scartato, area 4: [" + area4 + "], luogo; " + luogo);
-						}
-						else
-						{
-							Log.debug("Indice 210: " + i210 + ", " + f210 + ", indice: " + indice);
-							Log.debug("Area 4: [" + area4 + "] isbd: " + isbd + ", indice: " + indice);
-							lt.out.println(bid + " (" + dataVar + "), area4: " + area4);
-						}
+						Log.debug("Indice 210: " + i210 + ", " + f210 + ", indice: " + indice);
+						Log.info("Area 4: [" + area4 + "] isbd: " + isbd + ", indice: " + indice);
+						lt.out.println(bid + "(" + dataVar + "), area4: " + area4);
 					}
 					catch(StringIndexOutOfBoundsException e)
 					{
@@ -127,10 +120,6 @@ public class LuoghiTitoliArea4
 				lt.out.flush();
 			}
 			lt.out.close();
-		}
-		catch(SQLSyntaxErrorException e)
-		{
-			e.printStackTrace();
 		}
 		catch(SQLException e)
 		{

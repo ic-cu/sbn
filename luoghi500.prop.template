@@ -12,6 +12,7 @@ param.datada = 2017-10-25
 
 query.luoghi = \
 	SELECT \
+		COUNT( "TR_TIT_LUO"."LID" ) "legami", \
 		"TB_LUOGO"."LID" "LID", \
 		"TB_LUOGO"."DS_LUOGO" \
 	FROM \
@@ -23,7 +24,8 @@ query.luoghi = \
 		AND "TB_LUOGO"."CD_PAESE" = 'IT' \
 		AND ( "TB_LUOGO"."CD_LIVELLO" = '97' OR "TB_LUOGO"."CD_LIVELLO" = '96' OR "TB_LUOGO"."CD_LIVELLO" = '95' ) \
 	GROUP BY "TB_LUOGO"."LID", "TB_LUOGO"."DS_LUOGO" \
-	ORDER BY "TB_LUOGO"."DS_LUOGO" ASC
+	HAVING ( ( COUNT( "TR_TIT_LUO"."LID" ) <= 500 ) ) \
+	ORDER BY "legami" DESC
 	
 query.isbd = \
 	SELECT \
