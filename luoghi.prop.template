@@ -25,6 +25,24 @@ query.luoghi = \
 	GROUP BY "TB_LUOGO"."LID", "TB_LUOGO"."DS_LUOGO" \
 	ORDER BY "TB_LUOGO"."DS_LUOGO" ASC
 	
+# Stessa query, ma esclude i luoghi con al più 500 legami a titoli
+
+query.luoghi.min500 = \
+	SELECT \
+		"TB_LUOGO"."LID" "LID", \
+		"TB_LUOGO"."DS_LUOGO" \
+	FROM \
+		"MULTIMATERIALE"."TR_TIT_LUO" "TR_TIT_LUO", \
+		"MULTIMATERIALE"."TB_LUOGO" "TB_LUOGO" \
+	WHERE \
+		"TR_TIT_LUO"."LID" = "TB_LUOGO"."LID" \
+		AND "TR_TIT_LUO"."FL_CANC" != 'S' \
+		AND "TB_LUOGO"."CD_PAESE" = 'IT' \
+		AND ( "TB_LUOGO"."CD_LIVELLO" = '97' OR "TB_LUOGO"."CD_LIVELLO" = '96' OR "TB_LUOGO"."CD_LIVELLO" = '95' ) \
+	GROUP BY "TB_LUOGO"."LID", "TB_LUOGO"."DS_LUOGO" \
+	HAVING ( ( COUNT( "TR_TIT_LUO"."LID" ) > 500 ) ) \
+	ORDER BY "TB_LUOGO"."DS_LUOGO" ASC
+
 query.isbd = \
 	SELECT \
 		"TB_TITOLO"."BID", \
